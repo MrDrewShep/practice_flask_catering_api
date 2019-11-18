@@ -1,3 +1,7 @@
 venv/
 __pychache__/
 .vscode/
+
+
+
+before_running_the_app.txt
