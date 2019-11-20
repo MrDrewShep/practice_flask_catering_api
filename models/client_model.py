@@ -30,9 +30,11 @@ class Client(db.Model):
         return f'Client {self.name} successfully created.'
 
     @staticmethod
-    def check_if_user_exists(email):
+    def is_client(email):
         return Client.query.filter_by(email=email).first()
 
+    # MFD Marked for deletion, is_client appears like it will take care of this
+    # as it returns either the client object, or FALSE
     @staticmethod
-    def grab_client(email):
+    def client_get(email):
         return Client.query.filter_by(email=email).first()

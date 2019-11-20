@@ -13,7 +13,7 @@ def event_new():
     response = {"message": message}
     return response
 
-# Get, Change, Delete a specific event
+# Get, Update, Delete a specific event
 @event_blueprint.route('/<int:event_id>', methods=["GET", "PUT", "DELETE"])
 @jwt_required
 def event_specific(event_id):
@@ -34,7 +34,7 @@ def event_specific(event_id):
         response = {"message": "Invalid event selection."}
     return response
 
-# Get all events
+# Get all events belonging to active client
 @event_blueprint.route('/all', methods=["GET"])
 @jwt_required
 def event_all():

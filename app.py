@@ -20,7 +20,7 @@ app.register_blueprint(event_blueprint, url_prefix="/event")
 @app.route('/', methods=["GET"])
 def basic():
     return {
-        "message": "Sup, Drew?"
+        "message": "You hit the root endpoint"
     }
 
 if __name__ == "__main__":
