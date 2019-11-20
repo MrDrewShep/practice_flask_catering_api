@@ -1,67 +1,43 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from services.event_services import event_create, event_get, event_get_all, event_update, event_delete, is_event_owner, is_event
 
 event_blueprint = Blueprint("event_api", __name__)
 
-# New event route
-# IN: Event title, menu choice, date
-# OUT: Message
+# Create new event
 @event_blueprint.route('/new', methods=["POST"])
+@jwt_required
 def event_new():
     data = request.json
+    message = event_create(data)
+    response = {"message": message}
+    return response
 
-    # TODO Parse data information and create a new event record
-
-    # MFD
-    message = "New event created"
-
-    return {
-        "message": message
-    }
-
-# Specific event route: GET, PUT, DELETE
-# GET
-# IN: Event ID
-# OUT: The event data
-# PUT
-# IN: The event data, and event ID
-# OUT: Message
-# DELETE
-# IN: Event ID
-# OUT: Message
+# Get, Change, Delete a specific event
 @event_blueprint.route('/<int:event_id>', methods=["GET", "PUT", "DELETE"])
+@jwt_required
 def event_specific(event_id):
-    if request.method == "GET":
-        pass
-        # TODO build logic
+    client = get_jwt_identity()
+    event = is_event(event_id)
+    if event:
+        if is_event_owner(client, event_id):
+            if request.method == "GET":
+                response = event_get(event_id)
+            elif request.method == "PUT":
+                change_data = request.json
+                response = event_update(event, change_data)
+            elif request.method == "DELETE":
+                response = event_delete(event)
+        else:
+            response = {"message": "Unauthorized to view the selection."}
+    else:
+        response = {"message": "Invalid event selection."}
+    return response
 
-    elif request.method == "PUT":
-        pass
-        # TODO build logic
-
-    elif request.method == "DELETE":
-        pass
-        # TODO build logic
-
-
-    # MFD
-    response_dict = {
-        "message": "event 1 changed"
-    }
-
-
-    return response_dict
-
-# All events route
-# IN: None
-# OUT: A dict of all events
+# Get all events
 @event_blueprint.route('/all', methods=["GET"])
+@jwt_required
 def event_all():
-    #TODO build logic
-
-    # MFD
-    response_dict = {
-        "event 1": "event 1 deets",
-        "event 2": "event 2 deets"
-    }
-
-    return response_dict
+    client = get_jwt_identity()
+    response = event_get_all(client)
+    return response

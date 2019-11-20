@@ -1,7 +1,6 @@
 venv/
-__pychache__/
+__pycache__
 .vscode/
-
-
+migrations/
 
 before_running_the_app.txt
