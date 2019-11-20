@@ -1,6 +1,7 @@
 from flask import Blueprint, request, Response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from services.event_services import event_create, event_get, event_get_all, event_update, event_delete, is_event_owner, is_event
+from . import blacklist
 
 event_blueprint = Blueprint("event_api", __name__)
 
@@ -17,6 +18,8 @@ def event_new():
 @event_blueprint.route('/<int:event_id>', methods=["GET", "PUT", "DELETE"])
 @jwt_required
 def event_specific(event_id):
+
+    print(blacklist)
     client = get_jwt_identity()
     event = is_event(event_id)
     if event:

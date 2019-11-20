@@ -1,6 +1,8 @@
-from flask import Blueprint, request, redirect, url_for
+from flask import Blueprint, request, redirect, url_for, jsonify
+
+from . import blacklist
 from services.client_service import client_create, client_login
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_raw_jwt
 
 auth_blueprint = Blueprint("auth_api", __name__)
 
@@ -17,18 +19,12 @@ def login():
         }
 
 # Logout route
-@auth_blueprint.route('/logout', methods=["POST"])
+@auth_blueprint.route('/logout', methods=["DELETE"])
 @jwt_required
 def logout():
-
-    # TODO deauthenticate the token, see Adam for help
-
-    # MFD
-    message = "logged out"
-
-    return {
-        "message": message
-    }
+    jti = get_raw_jwt()["jti"]
+    blacklist.add(jti)
+    return jsonify({"message": "Successfully logged out."}), 200
 
 # Register route
 @auth_blueprint.route('/register', methods=["POST"])
